@@ -75,6 +75,7 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
     private boolean translator;
     private int listedCount;
     private boolean isFollowRequestSent;
+    private String geoPlaceId;
     private static final long serialVersionUID = -6345893237975349030L;
 
     /*package*/UserJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
@@ -156,11 +157,23 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
                 JSONObject statusJSON = json.getJSONObject("status");
                 status = new StatusJSONImpl(statusJSON);
             }
+            geoPlaceId = getGeoPlaceIdFromJSON(json);
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
     }
     
+    private String getGeoPlaceIdFromJSON(JSONObject json) throws JSONException{
+    	if (!json.isNull("filters")) {
+    		JSONObject filtersJSON = json.getJSONObject("filters");
+    		if (!filtersJSON.isNull("geo")) {
+    			JSONObject geoJSON = filtersJSON.getJSONObject("geo");
+    			return getRawString("placeId", geoJSON);
+    		}
+    	}
+    	return null;	
+	}
+
     /**
      * Get URL Entities from JSON Object.
      * returns URLEntity array by entities/[category]/urls/url[]
@@ -578,6 +591,14 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
         return urlEntity;
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getGeoPlaceId() {
+    	return geoPlaceId;
+    }
+    
     /*package*/
     static PagableResponseList<User> createPagableUserList(HttpResponse res, Configuration conf) throws TwitterException {
         try {
@@ -696,5 +717,5 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
                 ", isFollowRequestSent=" + isFollowRequestSent +
                 '}';
     }
-
+    
 }
