@@ -1,5 +1,6 @@
 /*
  * Copyright 2007 Yusuke Yamamoto
+ * Copyright 2014 Rafal Fronczyk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +18,8 @@
 package twitter4j.internal.json;
 
 import twitter4j.*;
-
 import javax.annotation.Generated;
+
 import java.net.URL;
 import java.util.Date;
 
@@ -30,7 +31,7 @@ import java.util.Date;
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",
-        date = "2011-07-13"
+        date = "2014-04-22"
 )
 final class LazyUser implements twitter4j.User {
     private twitter4j.internal.http.HttpResponse res;
@@ -101,29 +102,8 @@ final class LazyUser implements twitter4j.User {
     public String getDescription() {
         return getTarget().getDescription();
     }
-    
-    /**
-     * Returns URL entities for user description.
-     * 
-     * @return URL entities for user description
-     * @since Twitter4J 3.0.3
-     */
-	@Override
-	public URLEntity[] getDescriptionURLEntities() {
-		return getTarget().getDescriptionURLEntities();
-	}
-	
-    /**
-     * Returns URL entity for user's URL.
-     * 
-     * @return URL entity for user's URL.
-     * @since Twitter4J 3.0.3
-     */
-	@Override
-	public URLEntity getURLEntity() {
-		return getTarget().getURLEntity();
-	}
-	
+
+
     /**
      * Tests if the user is enabling contributors
      *
@@ -144,24 +124,16 @@ final class LazyUser implements twitter4j.User {
         return getTarget().getProfileImageURL();
     }
 
-    @Override
     public String getBiggerProfileImageURL() {
         return getTarget().getBiggerProfileImageURL();
     }
 
-    @Override
     public String getMiniProfileImageURL() {
         return getTarget().getMiniProfileImageURL();
     }
 
-    @Override
     public String getOriginalProfileImageURL() {
         return getTarget().getOriginalProfileImageURL();
-    }
-
-    @Override
-    public URL getProfileImageUrlHttps() {
-        return getProfileImageUrlHttps();
     }
 
 
@@ -169,22 +141,24 @@ final class LazyUser implements twitter4j.User {
      * Returns the profile image url of the user, served over SSL
      *
      * @return the profile image url of the user, served over SSL
+     * @deprecated use {@link #getProfileImageURL()} instead
      */
+    public URL getProfileImageUrlHttps() {
+        return getTarget().getProfileImageUrlHttps();
+    }
+
     public String getProfileImageURLHttps() {
         return getTarget().getProfileImageURLHttps();
     }
 
-    @Override
     public String getBiggerProfileImageURLHttps() {
         return getTarget().getBiggerProfileImageURLHttps();
     }
 
-    @Override
     public String getMiniProfileImageURLHttps() {
         return getTarget().getMiniProfileImageURLHttps();
     }
 
-    @Override
     public String getOriginalProfileImageURLHttps() {
         return getTarget().getOriginalProfileImageURLHttps();
     }
@@ -198,6 +172,7 @@ final class LazyUser implements twitter4j.User {
     public String getURL() {
         return getTarget().getURL();
     }
+
 
     /**
      * Test if the user status is protected
@@ -291,11 +266,13 @@ final class LazyUser implements twitter4j.User {
         return getTarget().getTimeZone();
     }
 
-    @Override
-    public String getProfileBackgroundImageUrl() {
-        return getProfileBackgroundImageURL();
-    }
 
+    /**
+     * @deprecated use {@link #getProfileImageURL()} instead
+     */
+    public String getProfileBackgroundImageUrl() {
+        return getTarget().getProfileBackgroundImageUrl();
+    }
 
     public String getProfileBackgroundImageURL() {
         return getTarget().getProfileBackgroundImageURL();
@@ -306,34 +283,49 @@ final class LazyUser implements twitter4j.User {
         return getTarget().getProfileBackgroundImageUrlHttps();
     }
 
+
+    /**
+     * @since Twitter4J 3.0.0
+     */
     public String getProfileBannerURL() {
         return getTarget().getProfileBannerURL();
     }
 
-    @Override
+    /**
+     * @since Twitter4J 3.0.0
+     */
     public String getProfileBannerRetinaURL() {
         return getTarget().getProfileBannerRetinaURL();
     }
 
-    @Override
+    /**
+     * @since Twitter4J 3.0.0
+     */
     public String getProfileBannerIPadURL() {
         return getTarget().getProfileBannerIPadURL();
     }
 
-    @Override
+    /**
+     * @since Twitter4J 3.0.0
+     */
     public String getProfileBannerIPadRetinaURL() {
         return getTarget().getProfileBannerIPadRetinaURL();
     }
 
-    @Override
+    /**
+     * @since Twitter4J 3.0.0
+     */
     public String getProfileBannerMobileURL() {
         return getTarget().getProfileBannerMobileURL();
     }
 
-    @Override
+    /**
+     * @since Twitter4J 3.0.0
+     */
     public String getProfileBannerMobileRetinaURL() {
         return getTarget().getProfileBannerMobileRetinaURL();
     }
+
 
     public boolean isProfileBackgroundTiled() {
         return getTarget().isProfileBackgroundTiled();
@@ -353,6 +345,17 @@ final class LazyUser implements twitter4j.User {
 
     public int getStatusesCount() {
         return getTarget().getStatusesCount();
+    }
+
+    
+    /**
+     * Returns the geo placeId filter value
+     *
+     * @return the geo placeId filter value
+     * @since Twitter4J 3.0.3-u2i
+     */
+    public String getGeoPlaceId() {
+        return getTarget().getGeoPlaceId();
     }
 
 
@@ -406,6 +409,30 @@ final class LazyUser implements twitter4j.User {
         return getTarget().isFollowRequestSent();
     }
 
+    
+    /**
+     * Returns URL entities for user description.
+     * 
+     * @return URL entities for user description
+     * @since Twitter4J 3.0.3
+     */
+    public URLEntity[] getDescriptionURLEntities() {
+        return getTarget().getDescriptionURLEntities();
+    }
+
+    
+    /**
+     * Returns URL entity for user's URL.
+     * 
+     * @return URL entity for user's URL.
+     * @since Twitter4J 3.0.3
+     */
+    public URLEntity getURLEntity() {
+        return getTarget().getURLEntity();
+    }
+
+    
+    
     public RateLimitStatus getRateLimitStatus() {
         return getTarget().getRateLimitStatus();
     }
