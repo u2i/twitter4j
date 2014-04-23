@@ -15,6 +15,17 @@
  */
 package twitter4j;
 
+import static twitter4j.internal.http.HttpResponseCode.FORBIDDEN;
+import static twitter4j.internal.http.HttpResponseCode.NOT_ACCEPTABLE;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import twitter4j.auth.Authorization;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.async.Dispatcher;
@@ -24,16 +35,6 @@ import twitter4j.internal.http.HttpClientWrapperConfiguration;
 import twitter4j.internal.http.HttpParameter;
 import twitter4j.internal.logging.Logger;
 import twitter4j.internal.util.z_T4JInternalStringUtil;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static twitter4j.internal.http.HttpResponseCode.FORBIDDEN;
-import static twitter4j.internal.http.HttpResponseCode.NOT_ACCEPTABLE;
 
 /**
  * A java representation of the <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API: Methods</a><br>
@@ -77,7 +78,26 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             }
         });
     }
+    
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void geohose(final int count) {
+        ensureAuthorizationEnabled();
+        ensureStatusStreamListenerIsSet();
+        startHandler(new TwitterStreamConsumer(statusListeners, rawStreamListeners) {
+            @Override
+            public StatusStream getStream() throws TwitterException {
+                ensureAuthorizationEnabled();
+                return getCountStream("statuses/firehose.json", new HttpParameter[] { new HttpParameter("include_fields", "public_location"),
+                		new HttpParameter("count", String.valueOf(count)) });
+            }
+        });
+    }
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -112,11 +132,21 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     }
 
     private StatusStream getCountStream(String relativeUrl, int count) throws TwitterException {
-        ensureAuthorizationEnabled();
-        try {
+    	 HttpParameter[] params = new HttpParameter[]{new HttpParameter("count", String.valueOf(count))};
+    	 return getCountStream(relativeUrl, params);
+    }
+    
+    private StatusStream getCountStream(String relativeUrl, HttpParameter[] httpParams) throws TwitterException {
+    	ensureAuthorizationEnabled();
+    	
+    	List<HttpParameter> params = new ArrayList<HttpParameter>();
+    	Collections.addAll(params, httpParams);
+    	params.add(stallWarningsParam);
+    	HttpParameter[] allParams = params.toArray(new HttpParameter[params.size()]);
+    	
+    	try {
             return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL() + relativeUrl
-                    , new HttpParameter[]{new HttpParameter("count", String.valueOf(count))
-                    , stallWarningsParam}, auth), conf);
+                    , allParams, auth), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
         }
