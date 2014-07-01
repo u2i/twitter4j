@@ -163,7 +163,7 @@ import java.util.Date;
     		JSONObject filtersJSON = json.getJSONObject("filters");
     		if (!filtersJSON.isNull("geo")) {
     			JSONObject geoJSON = filtersJSON.getJSONObject("geo");
-    			return getRawString("placeId", geoJSON);
+    			return ParseUtil.getRawString("placeId", geoJSON);
     		}
     	}
     	return null;	
