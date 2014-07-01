@@ -74,17 +74,24 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
         });
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void geohose(final int count) {
+    public void geohose(final int count, final String partitions) {
         ensureAuthorizationEnabled();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer(Mode.status) {
             @Override
             public StatusStream getStream() throws TwitterException {
                 ensureAuthorizationEnabled();
-                return getCountStream("statuses/firehose.json",
-                        new HttpParameter[] { new HttpParameter("include_fields", "public_location"),
-                                new HttpParameter("count", String.valueOf(count)) });
+                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+                params.add(new HttpParameter("include_fields", "public_location"));
+                params.add(new HttpParameter("count", String.valueOf(count)));
+                if (null != partitions) {
+                    params.add(new HttpParameter("partitions", partitions));
+                }
+                return getCountStream("statuses/firehose.json", params.toArray(new HttpParameter[params.size()]));
             }
         });
     }
