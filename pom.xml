@@ -49,17 +49,14 @@
     </mailingLists>
     <distributionManagement>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <uniqueVersion>false</uniqueVersion>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/
-            </url>
+            <id>aws-release</id>
+            <name>AWS Release Repository</name>
+            <url>s3://maven.socialguide.com/releases</url>
         </repository>
         <snapshotRepository>
-            <id>org.twitter4j</id>
-            <name>twitter4j.org Repository</name>
-            <uniqueVersion>false</uniqueVersion>
-            <url>file:${user.home}/maven2/</url>
+            <id>aws-snapshot</id>
+            <name>AWS Snapshot Repository</name>
+            <url>s3://maven.socialguide.com/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
     <profiles>
@@ -100,4 +97,13 @@
         <module>twitter4j-stream</module>
         <module>twitter4j-media-support</module>
     </modules>
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.springframework.build</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>5.0.0.RELEASE</version>
+            </extension>
+        </extensions>
+    </build>
 </project>
