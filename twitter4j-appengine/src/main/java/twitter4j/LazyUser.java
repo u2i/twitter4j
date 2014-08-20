@@ -363,6 +363,13 @@ final class LazyUser implements twitter4j.User {
         return getTarget().isGeoEnabled();
     }
 
+    /**
+     * @return the place id of the user
+     * @since Twitter4J 4.0.3
+     */
+    public String getPlaceId() {
+        return getTarget().getPlaceId();
+    }
 
     /**
      * @return returns true if the user is a verified celebrity
