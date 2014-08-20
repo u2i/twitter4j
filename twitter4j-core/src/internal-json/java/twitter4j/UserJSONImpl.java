@@ -69,7 +69,7 @@ import java.util.Date;
     private boolean translator;
     private int listedCount;
     private boolean isFollowRequestSent;
-    private String geoPlaceId;
+    private String placeId;
 
     /*package*/UserJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         super(res);
@@ -152,22 +152,19 @@ import java.util.Date;
                 JSONObject statusJSON = json.getJSONObject("status");
                 status = new StatusJSONImpl(statusJSON);
             }
-            geoPlaceId = getGeoPlaceIdFromJSON(json);
+            placeId = getPlaceIdFromJSON(json);
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
     }
     
-    private String getGeoPlaceIdFromJSON(JSONObject json) throws JSONException{
-    	if (!json.isNull("filters")) {
-    		JSONObject filtersJSON = json.getJSONObject("filters");
-    		if (!filtersJSON.isNull("geo")) {
-    			JSONObject geoJSON = filtersJSON.getJSONObject("geo");
-    			return ParseUtil.getRawString("placeId", geoJSON);
-    		}
+    private String getPlaceIdFromJSON(JSONObject json) throws JSONException{
+    	if (!json.isNull("place")) {
+	    JSONObject placeJSON = json.getJSONObject("place");
+	    return ParseUtil.getRawString("id", placeJSON);
     	}
     	return null;	
-	}
+    }
 
     /**
      * Get URL Entities from JSON Object.
@@ -482,8 +479,8 @@ import java.util.Date;
      * {@inheritDoc}
      */
     @Override
-    public String getGeoPlaceId() {
-    	return geoPlaceId;
+    public String getPlaceId() {
+    	return placeId;
     }
     
     /*package*/
