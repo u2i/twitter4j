@@ -78,7 +78,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
      * {@inheritDoc}
      */
     @Override
-    public void geohose(final int count, final String partitions) {
+    public void geohose(final int count, final String partition) {
         ensureAuthorizationEnabled();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer(Mode.status) {
@@ -86,12 +86,10 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             public StatusStream getStream() throws TwitterException {
                 ensureAuthorizationEnabled();
                 final List<HttpParameter> params = new ArrayList<HttpParameter>();
-                params.add(new HttpParameter("include_fields", "public_location"));
-                params.add(new HttpParameter("count", String.valueOf(count)));
-                if (null != partitions) {
-                    params.add(new HttpParameter("partitions", partitions));
+                if (null != partition) {
+                    params.add(new HttpParameter("partition", partition));
                 }
-                return getCountStream("statuses/firehose.json", params.toArray(new HttpParameter[params.size()]));
+                return getCountStream("stream/firehose/accounts/NielsenTV/publishers/twitter/prod.json", params.toArray(new HttpParameter[params.size()]));
             }
         });
     }
@@ -138,11 +136,10 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
         List<HttpParameter> params = new ArrayList<HttpParameter>();
         Collections.addAll(params, httpParams);
-        params.add(stallWarningsParam);
         HttpParameter[] allParams = params.toArray(new HttpParameter[params.size()]);
 
         try {
-            return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL() + relativeUrl, allParams,
+            return new StatusStreamImpl(getDispatcher(), http.get(conf.getStreamBaseURL() + relativeUrl, allParams,
                     auth, null), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
