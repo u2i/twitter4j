@@ -108,4 +108,10 @@ public interface Configuration extends AuthorizationConfiguration, java.io.Seria
     boolean isTrimUserEnabled();
 
     boolean isDaemonEnabled();
+
+    String getGnipAccount();
+
+    String getGnipLabel();
+
+    String getGnipPublisher();
 }
