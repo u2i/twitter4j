@@ -42,6 +42,10 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     private int httpRetryCount = 0;
     private int httpRetryIntervalSeconds = 5;
 
+    private String gnipAccount;
+    private String gnipLabel;
+    private String gnipPublisher = "twitter";
+
     private String oAuthConsumerKey = null;
     private String oAuthConsumerSecret = null;
     private String oAuthAccessToken = null;
@@ -389,6 +393,30 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         this.httpRetryIntervalSeconds = retryIntervalSeconds;
     }
 
+    public String getGnipAccount() {
+        return gnipAccount;
+    }
+
+    protected void setGnipAccount(String gnipAccount) {
+        this.gnipAccount = gnipAccount;
+    }
+
+    public String getGnipLabel() {
+        return gnipLabel;
+    }
+
+    protected void setGnipLabel(String gnipLabel) {
+        this.gnipLabel = gnipLabel;
+    }
+
+    public String getGnipPublisher() {
+        return gnipPublisher;
+    }
+
+    protected void setGnipPublisher(String gnipPublisher) {
+        this.gnipPublisher = gnipPublisher;
+    }
+
     // oauth related setter/getters
 
     @Override
@@ -734,6 +762,9 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         if (httpRetryCount != that.httpRetryCount) return false;
         if (httpRetryIntervalSeconds != that.httpRetryIntervalSeconds) return false;
         if (httpStreamingReadTimeout != that.httpStreamingReadTimeout) return false;
+        if (gnipAccount != that.gnipAccount) return false;
+        if (gnipLabel != that.gnipLabel) return false;
+        if (gnipPublisher != that.gnipPublisher) return false;
         if (includeEntitiesEnabled != that.includeEntitiesEnabled) return false;
         if (includeMyRetweetEnabled != that.includeMyRetweetEnabled) return false;
         if (jsonStoreEnabled != that.jsonStoreEnabled) return false;
@@ -802,6 +833,9 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         result = 31 * result + httpStreamingReadTimeout;
         result = 31 * result + httpRetryCount;
         result = 31 * result + httpRetryIntervalSeconds;
+        result = 31 * result + (gnipAccount != null ? gnipAccount.hashCode() : 0);
+        result = 31 * result + (gnipLabel != null ? gnipLabel.hashCode() : 0);
+        result = 31 * result + (gnipPublisher != null ? gnipPublisher.hashCode() : 0);
         result = 31 * result + (oAuthConsumerKey != null ? oAuthConsumerKey.hashCode() : 0);
         result = 31 * result + (oAuthConsumerSecret != null ? oAuthConsumerSecret.hashCode() : 0);
         result = 31 * result + (oAuthAccessToken != null ? oAuthAccessToken.hashCode() : 0);
@@ -850,6 +884,9 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
                 ", httpStreamingReadTimeout=" + httpStreamingReadTimeout +
                 ", httpRetryCount=" + httpRetryCount +
                 ", httpRetryIntervalSeconds=" + httpRetryIntervalSeconds +
+                ", gnipAccount=" + gnipAccount +
+                ", gnipLabel=" + gnipLabel +
+                ", gnipPublisher=" + gnipPublisher +
                 ", oAuthConsumerKey='" + oAuthConsumerKey + '\'' +
                 ", oAuthConsumerSecret='" + oAuthConsumerSecret + '\'' +
                 ", oAuthAccessToken='" + oAuthAccessToken + '\'' +

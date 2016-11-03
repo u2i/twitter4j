@@ -77,6 +77,8 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      */
     void geohose(final int count, final String partitions);
 
+    void gnipFirehose(final int partition);
+
     /**
      * Starts listening on all public statuses containing links. Available only to approved parties and requires a signed agreement to access. Please do not contact us about access to the links stream. If your service warrants access to it, we'll contact you.
      *

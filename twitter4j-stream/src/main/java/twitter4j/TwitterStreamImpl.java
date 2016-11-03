@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static twitter4j.HttpResponseCode.FORBIDDEN;
 import static twitter4j.HttpResponseCode.NOT_ACCEPTABLE;
@@ -73,7 +71,29 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             }
         });
     }
-    
+
+    public void gnipFirehose(final int partition) {
+        ensureAuthorizationEnabled();
+        ensureStatusStreamListenerIsSet();
+        startHandler(new TwitterStreamConsumer(Mode.status) {
+            @Override
+            public StatusStream getStream() throws TwitterException {
+                ensureAuthorizationEnabled();
+                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+
+                params.add(new HttpParameter("partition", Integer.toString(partition)));
+
+                String account   = conf.getGnipAccount();
+                String publisher = conf.getGnipPublisher();
+                String label     = conf.getGnipLabel();
+
+                String path = String.format("stream/firehose/accounts/%s/publishers/%s/%s.json", account, publisher, label);
+
+                return getCountStream(path, params.toArray(new HttpParameter[params.size()]));
+            }
+        });
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -86,19 +106,21 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             public StatusStream getStream() throws TwitterException {
                 ensureAuthorizationEnabled();
                 final List<HttpParameter> params = new ArrayList<HttpParameter>();
+
                 params.add(new HttpParameter("include_fields", "public_location"));
                 params.add(new HttpParameter("count", String.valueOf(count)));
+
                 if (null != partitions) {
                     params.add(new HttpParameter("partitions", partitions));
                 }
-                return getCountStream("statuses/firehose.json", params.toArray(new HttpParameter[params.size()]));
+                return getPostCountStream("statuses/firehose.json", params.toArray(new HttpParameter[params.size()]));
             }
         });
     }
 
     StatusStream getFirehoseStream(int count) throws TwitterException {
         ensureAuthorizationEnabled();
-        return getCountStream("statuses/firehose.json", count);
+        return getPostCountStream("statuses/firehose.json", count);
     }
 
     @Override
@@ -125,15 +147,30 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
      */
     StatusStream getLinksStream(int count) throws TwitterException {
         ensureAuthorizationEnabled();
-        return getCountStream("statuses/links.json", count);
+        return getPostCountStream("statuses/links.json", count);
     }
 
-    private StatusStream getCountStream(String relativeUrl, int count) throws TwitterException {
+    private StatusStream getPostCountStream(String relativeUrl, int count) throws TwitterException {
         HttpParameter[] params = new HttpParameter[] { new HttpParameter("count", String.valueOf(count)) };
-        return getCountStream(relativeUrl, params);
+        return getPostCountStream(relativeUrl, params);
     }
-    
+
     private StatusStream getCountStream(String relativeUrl, HttpParameter[] httpParams) throws TwitterException {
+        ensureAuthorizationEnabled();
+
+        List<HttpParameter> params = new ArrayList<HttpParameter>();
+        Collections.addAll(params, httpParams);
+        HttpParameter[] allParams = params.toArray(new HttpParameter[params.size()]);
+
+        try {
+            return new StatusStreamImpl(getDispatcher(), http.get(conf.getStreamBaseURL() + relativeUrl, allParams,
+                    auth, null), conf);
+        } catch (IOException e) {
+            throw new TwitterException(e);
+        }
+    }
+
+    private StatusStream getPostCountStream(String relativeUrl, HttpParameter[] httpParams) throws TwitterException {
         ensureAuthorizationEnabled();
 
         List<HttpParameter> params = new ArrayList<HttpParameter>();
