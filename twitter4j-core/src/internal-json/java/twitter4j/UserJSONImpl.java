@@ -69,6 +69,7 @@ import java.util.Date;
     private boolean translator;
     private int listedCount;
     private boolean isFollowRequestSent;
+    private String placeId;
 
     /*package*/UserJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         super(res);
@@ -151,9 +152,18 @@ import java.util.Date;
                 JSONObject statusJSON = json.getJSONObject("status");
                 status = new StatusJSONImpl(statusJSON);
             }
+            placeId = getPlaceIdFromJSON(json);
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
+    }
+    
+    private String getPlaceIdFromJSON(JSONObject json) throws JSONException{
+    	if (!json.isNull("place")) {
+	    JSONObject placeJSON = json.getJSONObject("place");
+	    return ParseUtil.getRawString("id", placeJSON);
+    	}
+    	return null;	
     }
 
     /**
@@ -464,7 +474,15 @@ import java.util.Date;
         }
         return urlEntity;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPlaceId() {
+    	return placeId;
+    }
+    
     /*package*/
     static PagableResponseList<User> createPagableUserList(HttpResponse res, Configuration conf) throws TwitterException {
         try {
@@ -581,5 +599,5 @@ import java.util.Date;
                 ", isFollowRequestSent=" + isFollowRequestSent +
                 '}';
     }
-
+    
 }

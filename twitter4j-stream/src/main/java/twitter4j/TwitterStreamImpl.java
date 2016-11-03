@@ -21,6 +21,7 @@ import twitter4j.conf.Configuration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static twitter4j.HttpResponseCode.FORBIDDEN;
@@ -71,19 +72,55 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
         });
     }
 
+    public void gnipFirehose(final int partition) {
+        ensureAuthorizationEnabled();
+        ensureStatusStreamListenerIsSet();
+        startHandler(new TwitterStreamConsumer(Mode.status) {
+            @Override
+            public StatusStream getStream() throws TwitterException {
+                ensureAuthorizationEnabled();
+                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+
+                params.add(new HttpParameter("partition", Integer.toString(partition)));
+
+                String account   = conf.getGnipAccount();
+                String publisher = conf.getGnipPublisher();
+                String label     = conf.getGnipLabel();
+
+                String path = String.format("stream/firehose/accounts/%s/publishers/%s/%s.json", account, publisher, label);
+
+                return getCountStream(path, params.toArray(new HttpParameter[params.size()]));
+            }
+        });
+    }
+
     /**
-     * Returns a status stream of all public statuses. Available only to approved parties and requires a signed agreement to access. Please do not contact us about access to the firehose. If your service warrants access to it, we'll contact you.
-     *
-     * @param count Indicates the number of previous statuses to stream before transitioning to the live stream.
-     * @return StatusStream
-     * @throws TwitterException when Twitter service or network is unavailable
-     * @see twitter4j.StatusStream
-     * @see <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API Methods statuses/firehose</a>
-     * @since Twitter4J 2.0.4
+     * {@inheritDoc}
      */
+    @Override
+    public void geohose(final int count, final String partitions) {
+        ensureAuthorizationEnabled();
+        ensureStatusStreamListenerIsSet();
+        startHandler(new TwitterStreamConsumer(Mode.status) {
+            @Override
+            public StatusStream getStream() throws TwitterException {
+                ensureAuthorizationEnabled();
+                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+
+                params.add(new HttpParameter("include_fields", "public_location"));
+                params.add(new HttpParameter("count", String.valueOf(count)));
+
+                if (null != partitions) {
+                    params.add(new HttpParameter("partitions", partitions));
+                }
+                return getPostCountStream("statuses/firehose.json", params.toArray(new HttpParameter[params.size()]));
+            }
+        });
+    }
+
     StatusStream getFirehoseStream(int count) throws TwitterException {
         ensureAuthorizationEnabled();
-        return getCountStream("statuses/firehose.json", count);
+        return getPostCountStream("statuses/firehose.json", count);
     }
 
     @Override
@@ -110,15 +147,40 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
      */
     StatusStream getLinksStream(int count) throws TwitterException {
         ensureAuthorizationEnabled();
-        return getCountStream("statuses/links.json", count);
+        return getPostCountStream("statuses/links.json", count);
     }
 
-    private StatusStream getCountStream(String relativeUrl, int count) throws TwitterException {
+    private StatusStream getPostCountStream(String relativeUrl, int count) throws TwitterException {
+        HttpParameter[] params = new HttpParameter[] { new HttpParameter("count", String.valueOf(count)) };
+        return getPostCountStream(relativeUrl, params);
+    }
+
+    private StatusStream getCountStream(String relativeUrl, HttpParameter[] httpParams) throws TwitterException {
         ensureAuthorizationEnabled();
+
+        List<HttpParameter> params = new ArrayList<HttpParameter>();
+        Collections.addAll(params, httpParams);
+        HttpParameter[] allParams = params.toArray(new HttpParameter[params.size()]);
+
         try {
-            return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL() + relativeUrl
-                    , new HttpParameter[]{new HttpParameter("count", String.valueOf(count))
-                    , stallWarningsParam}, auth, null), conf);
+            return new StatusStreamImpl(getDispatcher(), http.get(conf.getStreamBaseURL() + relativeUrl, allParams,
+                    auth, null), conf);
+        } catch (IOException e) {
+            throw new TwitterException(e);
+        }
+    }
+
+    private StatusStream getPostCountStream(String relativeUrl, HttpParameter[] httpParams) throws TwitterException {
+        ensureAuthorizationEnabled();
+
+        List<HttpParameter> params = new ArrayList<HttpParameter>();
+        Collections.addAll(params, httpParams);
+        params.add(stallWarningsParam);
+        HttpParameter[] allParams = params.toArray(new HttpParameter[params.size()]);
+
+        try {
+            return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL() + relativeUrl, allParams,
+                    auth, null), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
         }

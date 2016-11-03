@@ -47,6 +47,10 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
     private static final String HTTP_RETRY_COUNT = "http.retryCount";
     private static final String HTTP_RETRY_INTERVAL_SECS = "http.retryIntervalSecs";
 
+    private static final String GNIP_ACCOUNT = "gnip.account";
+    private static final String GNIP_LABEL = "gnip.label";
+    private static final String GNIP_PUBLISHER = "gnip.publisher";
+
     private static final String OAUTH_CONSUMER_KEY = "oauth.consumerKey";
     private static final String OAUTH_CONSUMER_SECRET = "oauth.consumerSecret";
     private static final String OAUTH_ACCESS_TOKEN = "oauth.accessToken";
@@ -272,6 +276,15 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         }
         if (notNull(props, prefix, HTTP_RETRY_INTERVAL_SECS)) {
             setHttpRetryIntervalSeconds(getIntProperty(props, prefix, HTTP_RETRY_INTERVAL_SECS));
+        }
+        if (notNull(props, prefix, GNIP_ACCOUNT)) {
+            setGnipAccount(getString(props, prefix, GNIP_ACCOUNT));
+        }
+        if (notNull(props, prefix, GNIP_LABEL)) {
+            setGnipLabel(getString(props, prefix, GNIP_LABEL));
+        }
+        if (notNull(props, prefix, GNIP_PUBLISHER)) {
+            setGnipPublisher(getString(props, prefix, GNIP_PUBLISHER));
         }
         if (notNull(props, prefix, OAUTH_CONSUMER_KEY)) {
             setOAuthConsumerKey(getString(props, prefix, OAUTH_CONSUMER_KEY));
