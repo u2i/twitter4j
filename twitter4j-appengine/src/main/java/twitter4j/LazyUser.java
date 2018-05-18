@@ -364,14 +364,6 @@ final class LazyUser implements twitter4j.User {
     }
 
     /**
-     * @return the place id of the user
-     * @since Twitter4J 4.0.3
-     */
-    public String getPlaceId() {
-        return getTarget().getPlaceId();
-    }
-
-    /**
      * @return the country code of the user
      * @since Twitter4J 4.0.6
      */
