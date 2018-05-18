@@ -69,7 +69,6 @@ import java.util.Date;
     private boolean translator;
     private int listedCount;
     private boolean isFollowRequestSent;
-    private String placeId;
     private String derivedCountryCode;
 
     /*package*/UserJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
@@ -153,19 +152,10 @@ import java.util.Date;
                 JSONObject statusJSON = json.getJSONObject("status");
                 status = new StatusJSONImpl(statusJSON);
             }
-            placeId = getPlaceIdFromJSON(json);
             derivedCountryCode = getDerivedCountryCodeFromJSON(json);
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
-    }
-
-    private String getPlaceIdFromJSON(JSONObject json) throws JSONException{
-    	if (!json.isNull("place")) {
-	    JSONObject placeJSON = json.getJSONObject("place");
-	    return ParseUtil.getRawString("id", placeJSON);
-    	}
-        return null;
     }
 
     private String getDerivedCountryCodeFromJSON(JSONObject json) throws JSONException{
@@ -500,14 +490,6 @@ import java.util.Date;
      * {@inheritDoc}
      */
     @Override
-    public String getPlaceId() {
-    	return placeId;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getDerivedCountryCode() {
         return derivedCountryCode;
     }
@@ -628,5 +610,5 @@ import java.util.Date;
                 ", isFollowRequestSent=" + isFollowRequestSent +
                 '}';
     }
-    
+
 }

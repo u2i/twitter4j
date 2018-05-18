@@ -209,14 +209,6 @@ public interface User extends Comparable<User>, TwitterResponse, java.io.Seriali
     int getStatusesCount();
 
     /**
-     * Returns the user place id value
-     *
-     * @return the user place id value
-     * @since Twitter4J 4.0.2-u2i
-     */
-    String getPlaceId();
-
-    /**
      * Returns the user country code value
      *
      * @return the user country code value
