@@ -27,7 +27,7 @@ import java.util.Date;
  */
 /*package*/ final class UserJSONImpl extends TwitterResponseImpl implements User, java.io.Serializable {
 
-    private static final long serialVersionUID = -5448266606847617015L;
+    private static final long serialVersionUID = -5448266606847617012L;
     private long id;
     private String name;
     private String screenName;
@@ -70,6 +70,7 @@ import java.util.Date;
     private int listedCount;
     private boolean isFollowRequestSent;
     private String placeId;
+    private String derivedCountryCode;
 
     /*package*/UserJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         super(res);
@@ -153,17 +154,37 @@ import java.util.Date;
                 status = new StatusJSONImpl(statusJSON);
             }
             placeId = getPlaceIdFromJSON(json);
+            derivedCountryCode = getDerivedCountryCodeFromJSON(json);
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
     }
-    
+
     private String getPlaceIdFromJSON(JSONObject json) throws JSONException{
     	if (!json.isNull("place")) {
 	    JSONObject placeJSON = json.getJSONObject("place");
 	    return ParseUtil.getRawString("id", placeJSON);
     	}
-    	return null;	
+        return null;
+    }
+
+    private String getDerivedCountryCodeFromJSON(JSONObject json) throws JSONException{
+        String country_code = null;
+
+        if (!json.isNull("derived")) {
+          JSONObject derivedJSON = json.getJSONObject("derived");
+
+            if (!derivedJSON.isNull("locations")) {
+                JSONArray locationsJSON = derivedJSON.getJSONArray("locations");
+
+                if (locationsJSON.length() > 0) {
+                    JSONObject locationJSON = locationsJSON.getJSONObject(0);
+
+                    country_code = ParseUtil.getRawString("country_code", locationJSON);
+                }
+            }
+        }
+        return country_code;
     }
 
     /**
@@ -474,7 +495,7 @@ import java.util.Date;
         }
         return urlEntity;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -482,7 +503,15 @@ import java.util.Date;
     public String getPlaceId() {
     	return placeId;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDerivedCountryCode() {
+        return derivedCountryCode;
+    }
+
     /*package*/
     static PagableResponseList<User> createPagableUserList(HttpResponse res, Configuration conf) throws TwitterException {
         try {

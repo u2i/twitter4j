@@ -372,6 +372,14 @@ final class LazyUser implements twitter4j.User {
     }
 
     /**
+     * @return the country code of the user
+     * @since Twitter4J 4.0.6
+     */
+    public String getDerivedCountryCode() {
+        return getTarget().getDerivedCountryCode();
+    }
+
+    /**
      * @return returns true if the user is a verified celebrity
      * @since Twitter4J 2.0.10
      */
