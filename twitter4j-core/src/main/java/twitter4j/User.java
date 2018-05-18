@@ -207,14 +207,14 @@ public interface User extends Comparable<User>, TwitterResponse, java.io.Seriali
     String getLang();
 
     int getStatusesCount();
-    
+
     /**
-     * Returns the user place id value
+     * Returns the user country code value
      *
-     * @return the user place id value
-     * @since Twitter4J 4.0.2-u2i
+     * @return the user country code value
+     * @since Twitter4J 4.0.6-u2i
      */
-    String getPlaceId();
+    String getDerivedCountryCode();
 
     /**
      * @return the user is enabling geo location
