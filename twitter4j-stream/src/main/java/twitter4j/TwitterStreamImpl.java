@@ -83,11 +83,12 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
                 params.add(new HttpParameter("partition", Integer.toString(partition)));
 
+                String stream    = conf.getGnipStream();
                 String account   = conf.getGnipAccount();
                 String publisher = conf.getGnipPublisher();
                 String label     = conf.getGnipLabel();
 
-                String path = String.format("stream/firehose/accounts/%s/publishers/%s/%s.json", account, publisher, label);
+                String path = String.format("stream/%s/accounts/%s/publishers/%s/%s.json", stream, account, publisher, label);
 
                 return getCountStream(path, params.toArray(new HttpParameter[params.size()]));
             }

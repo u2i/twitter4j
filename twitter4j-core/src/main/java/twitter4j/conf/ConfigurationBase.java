@@ -42,6 +42,7 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     private int httpRetryCount = 0;
     private int httpRetryIntervalSeconds = 5;
 
+    private String gnipStream;
     private String gnipAccount;
     private String gnipLabel;
     private String gnipPublisher = "twitter";
@@ -391,6 +392,14 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
 
     protected final void setHttpRetryIntervalSeconds(int retryIntervalSeconds) {
         this.httpRetryIntervalSeconds = retryIntervalSeconds;
+    }
+
+    public String getGnipStream() {
+        return gnipStream;
+    }
+
+    protected void setGnipStream(String gnipStream) {
+        this.gnipStream = gnipStream;
     }
 
     public String getGnipAccount() {
