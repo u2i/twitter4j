@@ -47,6 +47,7 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
     private static final String HTTP_RETRY_COUNT = "http.retryCount";
     private static final String HTTP_RETRY_INTERVAL_SECS = "http.retryIntervalSecs";
 
+    private static final String GNIP_STREAM = "gnip.stream";
     private static final String GNIP_ACCOUNT = "gnip.account";
     private static final String GNIP_LABEL = "gnip.label";
     private static final String GNIP_PUBLISHER = "gnip.publisher";
@@ -276,6 +277,9 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         }
         if (notNull(props, prefix, HTTP_RETRY_INTERVAL_SECS)) {
             setHttpRetryIntervalSeconds(getIntProperty(props, prefix, HTTP_RETRY_INTERVAL_SECS));
+        }
+        if (notNull(props, prefix, GNIP_STREAM)) {
+            setGnipStream(getString(props, prefix, GNIP_STREAM));
         }
         if (notNull(props, prefix, GNIP_ACCOUNT)) {
             setGnipAccount(getString(props, prefix, GNIP_ACCOUNT));
