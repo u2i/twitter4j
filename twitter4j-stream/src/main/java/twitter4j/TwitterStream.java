@@ -65,8 +65,10 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @since Twitter4J 2.0.4
      */
     void firehose(final int count);
-    
-    void gnipFirehose(final int partition);
+
+    void gnipStream();
+
+    void gnipPartitionedStream(final int partition);
 
     /**
      * Starts listening on all public statuses containing links. Available only to approved parties and requires a signed agreement to access. Please do not contact us about access to the links stream. If your service warrants access to it, we'll contact you.

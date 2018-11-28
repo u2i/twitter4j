@@ -72,7 +72,20 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
         });
     }
 
-    public void gnipFirehose(final int partition) {
+    public void gnipStream() {
+        ensureAuthorizationEnabled();
+        ensureStatusStreamListenerIsSet();
+        startHandler(new TwitterStreamConsumer(Mode.status) {
+            @Override
+            public StatusStream getStream() throws TwitterException {
+                ensureAuthorizationEnabled();
+                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+                return getCountStream(getGnipPath(), params.toArray(new HttpParameter[params.size()]));
+            }
+        });
+    }
+
+    public void gnipPartitionedStream(final int partition) {
         ensureAuthorizationEnabled();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer(Mode.status) {
@@ -83,16 +96,18 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
                 params.add(new HttpParameter("partition", Integer.toString(partition)));
 
-                String stream    = conf.getGnipStream();
-                String account   = conf.getGnipAccount();
-                String publisher = conf.getGnipPublisher();
-                String label     = conf.getGnipLabel();
-
-                String path = String.format("stream/%s/accounts/%s/publishers/%s/%s.json", stream, account, publisher, label);
-
-                return getCountStream(path, params.toArray(new HttpParameter[params.size()]));
+                return getCountStream(getGnipPath(), params.toArray(new HttpParameter[params.size()]));
             }
         });
+    }
+
+    private String getGnipPath() {
+        String stream    = conf.getGnipStream();
+        String account   = conf.getGnipAccount();
+        String publisher = conf.getGnipPublisher();
+        String label     = conf.getGnipLabel();
+
+        return String.format("stream/%s/accounts/%s/publishers/%s/%s.json", stream, account, publisher, label);
     }
 
     StatusStream getFirehoseStream(int count) throws TwitterException {
