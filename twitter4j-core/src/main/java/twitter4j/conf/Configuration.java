@@ -109,6 +109,8 @@ public interface Configuration extends AuthorizationConfiguration, java.io.Seria
 
     boolean isDaemonEnabled();
 
+    String getGnipStream();
+
     String getGnipAccount();
 
     String getGnipLabel();

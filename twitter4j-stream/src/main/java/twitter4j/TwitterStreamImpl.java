@@ -72,7 +72,20 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
         });
     }
 
-    public void gnipFirehose(final int partition) {
+    public void gnipStream() {
+        ensureAuthorizationEnabled();
+        ensureStatusStreamListenerIsSet();
+        startHandler(new TwitterStreamConsumer(Mode.status) {
+            @Override
+            public StatusStream getStream() throws TwitterException {
+                ensureAuthorizationEnabled();
+                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+                return getCountStream(getGnipPath(), params.toArray(new HttpParameter[params.size()]));
+            }
+        });
+    }
+
+    public void gnipPartitionedStream(final int partition) {
         ensureAuthorizationEnabled();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer(Mode.status) {
@@ -83,39 +96,18 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
                 params.add(new HttpParameter("partition", Integer.toString(partition)));
 
-                String account   = conf.getGnipAccount();
-                String publisher = conf.getGnipPublisher();
-                String label     = conf.getGnipLabel();
-
-                String path = String.format("stream/firehose/accounts/%s/publishers/%s/%s.json", account, publisher, label);
-
-                return getCountStream(path, params.toArray(new HttpParameter[params.size()]));
+                return getCountStream(getGnipPath(), params.toArray(new HttpParameter[params.size()]));
             }
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void geohose(final int count, final String partitions) {
-        ensureAuthorizationEnabled();
-        ensureStatusStreamListenerIsSet();
-        startHandler(new TwitterStreamConsumer(Mode.status) {
-            @Override
-            public StatusStream getStream() throws TwitterException {
-                ensureAuthorizationEnabled();
-                final List<HttpParameter> params = new ArrayList<HttpParameter>();
+    private String getGnipPath() {
+        String stream    = conf.getGnipStream();
+        String account   = conf.getGnipAccount();
+        String publisher = conf.getGnipPublisher();
+        String label     = conf.getGnipLabel();
 
-                params.add(new HttpParameter("include_fields", "public_location"));
-                params.add(new HttpParameter("count", String.valueOf(count)));
-
-                if (null != partitions) {
-                    params.add(new HttpParameter("partitions", partitions));
-                }
-                return getPostCountStream("statuses/firehose.json", params.toArray(new HttpParameter[params.size()]));
-            }
-        });
+        return String.format("stream/%s/accounts/%s/publishers/%s/%s.json", stream, account, publisher, label);
     }
 
     StatusStream getFirehoseStream(int count) throws TwitterException {
